@@ -1,0 +1,214 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>نور الآيات | القرآن الكريم وتفسيره</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#f3f6f1;color:#20352b;font-family:Tahoma,Arial,sans-serif;line-height:1.9}
+header,footer{background:#105743;color:white;text-align:center;padding:25px 12px}
+header{border-bottom:4px solid #c9a65b}
+h1{margin:5px;font-size:38px}
+main{max-width:850px;margin:24px auto;padding:0 14px}
+.card{background:white;padding:20px;border-radius:16px;margin-bottom:18px;box-shadow:0 4px 15px #0001}
+h2{color:#105743;margin-top:0}
+label{display:block;font-weight:bold;margin:10px 0 5px}
+select,button{width:100%;padding:12px;font:inherit;border-radius:10px}
+select{border:1px solid #cbd8ce;background:white}
+button{background:#105743;color:white;border:0;margin-top:15px;cursor:pointer}
+#ayah{font-family:"Traditional Arabic",Tahoma,serif;font-size:30px;line-height:2.1;text-align:center;background:#fbfaf3;padding:20px;border-radius:12px}
+#tafsir{white-space:pre-wrap;font-size:17px}
+#status{font-size:14px;color:#64736a}
+footer .copy{color:#ead7a2}
+@media(min-width:600px){.fields{display:grid;grid-template-columns:1fr 1fr;gap:12px}}
+</style>
+</head>
+<body>
+
+<header>
+  <div>القرآن الكريم • تدبّر وفهم</div>
+  <h1>نور الآيات</h1>
+  <p>اقرأ الآية، وافهم معناها، وتأمّل هدايتها</p>
+</header>
+
+<main>
+<section class="card">
+  <h2>السور والآيات</h2>
+  <div class="fields">
+    <div>
+      <label for="surah">اختر السورة</label>
+      <select id="surah"></select>
+    </div>
+    <div>
+      <label for="ayahNumber">اختر رقم الآية</label>
+      <select id="ayahNumber"></select>
+    </div>
+  </div>
+
+  <label for="tafsirType">اختر التفسير</label>
+  <select id="tafsirType">
+    <option value="ibn-kathir">تفسير ابن كثير</option>
+    <option value="al-tabari">تفسير الطبري</option>
+    <option value="muyassar">التفسير الميسّر</option>
+  </select>
+
+  <button id="showButton">عرض الآية والتفسير</button>
+  <p id="status">جارٍ تحميل السور...</p>
+</section>
+
+<section class="card">
+  <h2 id="ayahTitle">الآية الكريمة</h2>
+  <p id="ayah">اختر السورة والآية لعرض النص هنا.</p>
+</section>
+
+<section class="card">
+  <h2 id="tafsirTitle">تفسير الآية</h2>
+  <p id="tafsir">سيظهر التفسير هنا.</p>
+</section>
+
+<section class="card">
+  <h2>تنبيه</h2>
+  <p>
+    هذا الموقع أداة تعليمية ويحتاج إلى الإنترنت.
+    يُرجى مراجعة نصوص الآيات والتفسير من مصادر موثوقة.
+    إذا لم يتوفر التفسير المطلوب، سيظهر تنبيه بدلًا من
+    عرض نص غير متحقق منه.
+  </p>
+</section>
+</main>
+
+<footer>
+  <strong>نور الآيات — القرآن الكريم وتفسيره</strong>
+  <div class="copy">
+    حقوق الطبع والنشر © زياد طارق بن عبدالله الحمدي الجهني
+  </div>
+</footer>
+
+<script>
+const names = [
+"الفاتحة","البقرة","آل عمران","النساء","المائدة","الأنعام",
+"الأعراف","الأنفال","التوبة","يونس","هود","يوسف","الرعد",
+"إبراهيم","الحجر","النحل","الإسراء","الكهف","مريم","طه",
+"الأنبياء","الحج","المؤمنون","النور","الفرقان","الشعراء",
+"النمل","القصص","العنكبوت","الروم","لقمان","السجدة","الأحزاب",
+"سبأ","فاطر","يس","الصافات","ص","الزمر","غافر","فصلت",
+"الشورى","الزخرف","الدخان","الجاثية","الأحقاف","محمد","الفتح",
+"الحجرات","ق","الذاريات","الطور","النجم","القمر","الرحمن",
+"الواقعة","الحديد","المجادلة","الحشر","الممتحنة","الصف",
+"الجمعة","المنافقون","التغابن","الطلاق","التحريم","الملك",
+"القلم","الحاقة","المعارج","نوح","الجن","المزمل","المدثر",
+"القيامة","الإنسان","المرسلات","النبأ","النازعات","عبس",
+"التكوير","الانفطار","المطففين","الانشقاق","البروج","الطارق",
+"الأعلى","الغاشية","الفجر","البلد","الشمس","الليل","الضحى",
+"الشرح","التين","العلق","القدر","البينة","الزلزلة",
+"العاديات","القارعة","التكاثر","العصر","الهمزة","الفيل",
+"قريش","الماعون","الكوثر","الكافرون","النصر","المسد",
+"الإخلاص","الفلق","الناس"
+];
+
+const surah = document.getElementById("surah");
+const ayahNumber = document.getElementById("ayahNumber");
+const tafsirType = document.getElementById("tafsirType");
+const statusBox = document.getElementById("status");
+const ayahBox = document.getElementById("ayah");
+const tafsirBox = document.getElementById("tafsir");
+
+let ayahs = [];
+
+names.forEach((name, i) => {
+  const option = document.createElement("option");
+  option.value = i + 1;
+  option.textContent = `${i + 1}. سورة ${name}`;
+  surah.appendChild(option);
+});
+
+async function loadSurah() {
+  statusBox.textContent = "جارٍ تحميل آيات السورة...";
+  ayahNumber.innerHTML = "";
+  ayahs = [];
+
+  try {
+    const response = await fetch(
+      `https://api.alquran.cloud/v1/surah/${surah.value}`
+    );
+
+    if (!response.ok) throw new Error();
+
+    const result = await response.json();
+    if (result.code !== 200) throw new Error();
+
+    ayahs = result.data.ayahs;
+
+    ayahs.forEach(a => {
+      const option = document.createElement("option");
+      option.value = a.numberInSurah;
+      option.textContent = `الآية ${a.numberInSurah}`;
+      ayahNumber.appendChild(option);
+    });
+
+    statusBox.textContent =
+      `سورة ${names[Number(surah.value)-1]} — عدد الآيات: ${ayahs.length}`;
+
+  } catch {
+    ayahNumber.innerHTML = '<option value="">تعذر التحميل</option>';
+    statusBox.textContent =
+      "تعذر تحميل السورة. تحقق من الإنترنت وحاول مرة أخرى.";
+  }
+}
+
+async function showAyah() {
+  const s = Number(surah.value);
+  const n = Number(ayahNumber.value);
+  const selected = ayahs.find(a => a.numberInSurah === n);
+
+  if (!selected) {
+    statusBox.textContent = "اختر سورة وآية أولًا.";
+    return;
+  }
+
+  ayahBox.textContent = selected.text;
+  document.getElementById("ayahTitle").textContent =
+    `سورة ${names[s-1]} — الآية ${n}`;
+
+  document.getElementById("tafsirTitle").textContent =
+    tafsirType.options[tafsirType.selectedIndex].text;
+
+  tafsirBox.textContent = "جارٍ تحميل التفسير...";
+  statusBox.textContent = "جارٍ الاتصال بمصدر التفسير...";
+
+  try {
+    const url =
+      `https://alfurqan.online/api/v1/tafseer/` +
+      `${tafsirType.value}/surah/${s}/ayah/${n}`;
+
+    const response = await fetch(url);
+    if (!response.ok) throw new Error();
+
+    const result = await response.json();
+    const text = result?.ayah?.text || result?.data?.ayah?.text;
+
+    if (typeof text !== "string" || !text.trim()) {
+      throw new Error();
+    }
+
+    tafsirBox.textContent = text;
+    statusBox.textContent = "تم تحميل الآية والتفسير.";
+
+  } catch {
+    tafsirBox.textContent =
+      "تعذر تحميل التفسير المختار حاليًا. تحقق من الإنترنت " +
+      "وحاول مرة أخرى. لم نعرض نصًا بديلًا غير متحقق منه.";
+
+    statusBox.textContent = "تعذر الاتصال بخدمة التفسير.";
+  }
+}
+
+surah.addEventListener("change", loadSurah);
+document.getElementById("showButton").addEventListener("click", showAyah);
+
+loadSurah();
+</script>
+</body>
+</html>
